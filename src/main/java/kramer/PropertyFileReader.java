@@ -15,11 +15,12 @@ package kramer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
 
 
 public class PropertyFileReader {
-    private static final String BAD_KEY = "Property (form) is not correct format. Example formats: form1.class, form2.fieldname";
+    private static final String BAD_KEY = "Property ({0}) is not correct format. Example formats: form1.class, form2.fieldname";
     private FieldSizeResolver fieldSizeResolver;
 
     public List<FormFields> read(List<File> files) {
@@ -58,7 +59,7 @@ public class PropertyFileReader {
 
     private void validateKey(Object key) {
         if (key.toString().split("\\.").length != 2) {
-            throw new IllegalArgumentException(BAD_KEY);
+            throw new IllegalArgumentException(MessageFormat.format(BAD_KEY, key.toString()));
         }
     }
 
