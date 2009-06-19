@@ -19,7 +19,11 @@ import java.util.Map;
 
 public class FormFieldStore {
     private static final String COULD_NOT_FIND_FORM = "Could not find form ({0}) in the FormFieldStore. Are you sure you created field definitions for that form?";
+    private static final String NOT_POSITIVE_LENGTH = "The default length MUST be greater than zero";
+    private static final String COULD_NOT_FIND_FIELD = "Could not find length for field ({0}) on form {1}";
     private Map<Class, FormFields> forms = new HashMap<Class, FormFields>();
+    private int defaultLength;
+    private boolean useDefaultLength;
 
     public int getLength(Object form, String fieldName) {
         return getLength(form.getClass(), fieldName);
@@ -29,10 +33,29 @@ public class FormFieldStore {
         if (!forms.containsKey(formClass)) {
             throw new IllegalArgumentException(MessageFormat.format(COULD_NOT_FIND_FORM, formClass.getName()));
         }
-        return forms.get(formClass).lengthFor(fieldName);
+        FormFields formFields = forms.get(formClass);
+        if (formFields.hasField(fieldName)) {
+            return formFields.lengthFor(fieldName);
+        } else {
+            if (useDefaultLength) {
+                if (defaultLength <= 0) {
+                    throw new IllegalStateException(NOT_POSITIVE_LENGTH);
+                }
+                return defaultLength;
+            }
+            throw new IllegalArgumentException(MessageFormat.format(COULD_NOT_FIND_FIELD, fieldName, formClass.getName()));
+        }
     }
 
     public void addFormFields(FormFields fields) {
         forms.put(fields.getFormClass(), fields);
+    }
+
+    public void setDefaultLength(int defaultLength) {
+        this.defaultLength = defaultLength;
+    }
+
+    public void setUseDefaultLength(boolean useDefaultLength) {
+        this.useDefaultLength = useDefaultLength;
     }
 }

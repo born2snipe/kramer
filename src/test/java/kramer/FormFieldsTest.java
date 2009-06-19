@@ -24,20 +24,21 @@ public class FormFieldsTest extends TestCase {
         fields.setFormClass(String.class);
     }
 
-    public void test_lengthFor_FieldExists() {
+    public void test_FieldExists() {
         fields.field("field", 2);
 
         assertEquals(2, fields.lengthFor("field"));
+        assertTrue(fields.hasField("field"));
     }
 
-    public void test_lengthFor_FieldDoesNotExist() {
+    public void test_FieldDoesNotExist() {
         try {
             fields.lengthFor("field");
             fail();
         } catch (IllegalArgumentException err) {
             assertEquals("Could not find length for field (field) on form java.lang.String", err.getMessage());
         }
+        assertFalse(fields.hasField("field"));
     }
-
 
 }

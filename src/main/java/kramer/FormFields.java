@@ -27,7 +27,7 @@ public class FormFields {
     }
 
     public int lengthFor(String fieldName) {
-        if (!fields.containsKey(fieldName)) {
+        if (!hasField(fieldName)) {
             throw new IllegalArgumentException(MessageFormat.format(COULD_NOT_FIND_FIELD, fieldName, formClass.getName()));
         }
         return fields.get(fieldName);
@@ -39,5 +39,9 @@ public class FormFields {
 
     public void setFormClass(Class clazz) {
         this.formClass = clazz;
+    }
+
+    public boolean hasField(String fieldName) {
+        return fields.containsKey(fieldName);
     }
 }

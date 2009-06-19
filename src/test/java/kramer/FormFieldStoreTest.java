@@ -27,6 +27,49 @@ public class FormFieldStoreTest extends TestCase {
         store.addFormFields(fields);
     }
 
+    public void test_doNotUseDefaultLength() {
+        store.setUseDefaultLength(false);
+        store.setDefaultLength(-1);
+
+        try {
+            store.getLength(Form.class, "doesNotExist");
+            fail();
+        } catch (IllegalArgumentException err) {
+            assertEquals("Could not find length for field (doesNotExist) on form kramer.FormFieldStoreTest$Form", err.getMessage());
+        }
+    }
+
+    public void test_useDefaultLength_LengthIsNegative() {
+        store.setUseDefaultLength(true);
+        store.setDefaultLength(-1);
+
+        try {
+            store.getLength(Form.class, "doesNotExist");
+            fail();
+        } catch (IllegalStateException err) {
+            assertEquals("The default length MUST be greater than zero", err.getMessage());
+        }
+    }
+
+    public void test_useDefaultLength_LengthIsZero() {
+        store.setUseDefaultLength(true);
+        store.setDefaultLength(0);
+
+        try {
+            store.getLength(Form.class, "doesNotExist");
+            fail();
+        } catch (IllegalStateException err) {
+            assertEquals("The default length MUST be greater than zero", err.getMessage());
+        }
+    }
+
+    public void test_useDefaultLength() {
+        store.setUseDefaultLength(true);
+        store.setDefaultLength(10);
+
+        assertEquals(10, store.getLength(Form.class, "doesNotExist"));
+    }
+
     public void test_getLength_FormNotFound() {
         try {
             store.getLength(String.class, "doesNotMatter");
