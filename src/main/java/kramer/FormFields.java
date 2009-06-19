@@ -12,11 +12,13 @@
  */
 package kramer;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class FormFields {
+    private static final String COULD_NOT_FIND_FIELD = "Could not find length for field ({0}) on form {1}";
     private Class formClass;
     private Map<String, Integer> fields = new HashMap<String, Integer>();
 
@@ -25,6 +27,9 @@ public class FormFields {
     }
 
     public int lengthFor(String fieldName) {
+        if (!fields.containsKey(fieldName)) {
+            throw new IllegalArgumentException(MessageFormat.format(COULD_NOT_FIND_FIELD, fieldName, formClass.getName()));
+        }
         return fields.get(fieldName);
     }
 
