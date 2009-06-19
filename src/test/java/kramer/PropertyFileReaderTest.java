@@ -41,7 +41,7 @@ public class PropertyFileReaderTest extends TestCase {
             reader.read(props);
             fail();
         } catch (IllegalArgumentException err) {
-            assertEquals("Property (form) is not correct format. Example formats: form1.class, form2.fieldname", err.getMessage());
+            assertEquals("Property (form) is not a correct property format. Example formats: form1.class, form2.fieldname", err.getMessage());
         }
     }
 

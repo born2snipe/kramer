@@ -20,7 +20,7 @@ import java.util.*;
 
 
 public class PropertyFileReader {
-    private static final String BAD_KEY = "Property ({0}) is not correct format. Example formats: form1.class, form2.fieldname";
+    private static final String BAD_KEY = "Property ({0}) is not a correct property format. Example formats: form1.class, form2.fieldname";
     private FieldSizeResolver fieldSizeResolver;
 
     public List<FormFields> read(List<File> files) {
