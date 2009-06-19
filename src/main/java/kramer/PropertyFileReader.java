@@ -21,6 +21,7 @@ import java.util.*;
 
 public class PropertyFileReader {
     private static final String BAD_KEY = "Property ({0}) is not a correct property format. Example formats: form1.class, form2.fieldname";
+    private static final String UNRESOLVABLE = "Unable to find a FieldSizeResolver for ({0}) with value ({1})";
     private FieldSizeResolver fieldSizeResolver;
 
     public List<FormFields> read(List<File> files) {
@@ -47,7 +48,11 @@ public class PropertyFileReader {
                 validateKey(entry.getKey());
                 FormFields form = getFormFields(readForms, getFormId((String) entry.getKey()));
                 if (isField((String) entry.getKey())) {
-                    form.field(getField((String) entry.getKey()), fieldSizeResolver.resolveLength((String) entry.getValue()));
+                    if (fieldSizeResolver.isResolvable((String) entry.getValue())) {
+                        form.field(getField((String) entry.getKey()), fieldSizeResolver.resolveLength((String) entry.getValue()));
+                    } else {
+                        throw new IllegalArgumentException(MessageFormat.format(UNRESOLVABLE, entry.getKey(), entry.getValue()));
+                    }
                 } else {
                     form.setFormClass(loadClass((String) entry.getValue()));
                 }

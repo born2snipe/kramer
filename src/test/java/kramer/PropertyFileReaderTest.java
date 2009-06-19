@@ -58,6 +58,7 @@ public class PropertyFileReaderTest extends TestCase {
         props.setProperty("form.class", "java.lang.String");
         props.setProperty("form.field1", "3");
 
+        when(resolver.isResolvable("3")).thenReturn(true);
         when(resolver.resolveLength("3")).thenReturn(3);
 
         List<FormFields> forms = reader.read(props);
@@ -66,6 +67,20 @@ public class PropertyFileReaderTest extends TestCase {
         FormFields form = forms.get(0);
         assertEquals(String.class, form.getFormClass());
         assertEquals(3, form.lengthFor("field1"));
+    }
+
+    public void test_UnsupportedFieldType() {
+        props.setProperty("form.class", "java.lang.String");
+        props.setProperty("form.field1", "3");
+
+        when(resolver.isResolvable("3")).thenReturn(false);
+
+        try {
+            reader.read(props);
+            fail();
+        } catch (IllegalArgumentException err) {
+            assertEquals("Unable to find a FieldSizeResolver for (form.field1) with value (3)", err.getMessage());
+        }
     }
 
     public void test_read_NoProperties() {
