@@ -21,6 +21,7 @@ import java.text.MessageFormat;
 
 public class DatabaseColumnFieldSizeResolver implements FieldSizeResolver {
     private static final String COULD_NOT_FIND_COLUMN = "Could not find column {0}";
+    private static final String BAD_FORMAT = "Database column information given in a bad format ({0}). A valid format is schema.table.column or table.column";
     private DataSource dataSource;
 
     public int resolveLength(String fieldInfo) {
@@ -39,7 +40,7 @@ public class DatabaseColumnFieldSizeResolver implements FieldSizeResolver {
                 table = parts[1];
                 column = parts[2];
             } else {
-                throw new IllegalArgumentException("Database column information given in a bad format. A valid format is schema.table.column or table.column");
+                throw new IllegalArgumentException(MessageFormat.format(BAD_FORMAT, fieldInfo));
             }
 
             connection = dataSource.getConnection();

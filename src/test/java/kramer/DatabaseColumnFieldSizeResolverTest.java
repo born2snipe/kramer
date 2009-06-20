@@ -51,7 +51,7 @@ public class DatabaseColumnFieldSizeResolverTest extends TestCase {
             resolver.resolveLength("noEnoughData");
             fail();
         } catch (IllegalArgumentException err) {
-            assertEquals("Database column information given in a bad format. A valid format is schema.table.column or table.column", err.getMessage());
+            assertEquals("Database column information given in a bad format (noEnoughData). A valid format is schema.table.column or table.column", err.getMessage());
         }
 
         verifyZeroInteractions(dataSource, connection);
