@@ -13,9 +13,9 @@
 package kramer;
 
 import junit.framework.TestCase;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -31,10 +31,10 @@ public class PropertyFileReaderTest extends TestCase {
 
         props = new Properties();
         reader = new PropertyFileReader();
-        reader.setFieldSizeResolver(resolver);
+        reader.setFieldSizeResolvers(Arrays.asList(resolver));
     }
 
-    public void test_propretyIsMalformed() {
+    public void test_propertyIsMalformed() {
         props.setProperty("form", "2");
 
         try {
@@ -69,7 +69,29 @@ public class PropertyFileReaderTest extends TestCase {
         assertEquals(3, form.lengthFor("field1"));
     }
 
-    public void test_UnsupportedFieldType() {
+    public void test_UnsupportedFieldType_MultipleResolvers() {
+        FieldSizeResolver resolver2 = mock(FieldSizeResolver.class);
+
+        reader.setFieldSizeResolvers(Arrays.asList(resolver, resolver2));
+
+        props.setProperty("form.class", "java.lang.String");
+        props.setProperty("form.field1", "3");
+
+        when(resolver.isResolvable("3")).thenReturn(false);
+        when(resolver2.isResolvable("3")).thenReturn(false);
+
+        try {
+            reader.read(props);
+            fail();
+        } catch (IllegalArgumentException err) {
+            assertEquals("Unable to find a FieldSizeResolver for (form.field1) with value (3)", err.getMessage());
+        }
+
+        verify(resolver).isResolvable("3");
+        verify(resolver2).isResolvable("3");
+    }
+
+    public void test_UnsupportedFieldType_SingleResolver() {
         props.setProperty("form.class", "java.lang.String");
         props.setProperty("form.field1", "3");
 

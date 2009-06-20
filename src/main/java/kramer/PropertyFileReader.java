@@ -22,7 +22,7 @@ import java.util.*;
 public class PropertyFileReader {
     private static final String BAD_KEY = "Property ({0}) is not a correct property format. Example formats: form1.class, form2.fieldname";
     private static final String UNRESOLVABLE = "Unable to find a FieldSizeResolver for ({0}) with value ({1})";
-    private FieldSizeResolver fieldSizeResolver;
+    private List<FieldSizeResolver> fieldSizeResolvers = new ArrayList<FieldSizeResolver>();
 
     public List<FormFields> read(List<File> files) {
         Properties properties = new Properties();
@@ -48,7 +48,8 @@ public class PropertyFileReader {
                 validateKey(entry.getKey());
                 FormFields form = getFormFields(readForms, getFormId((String) entry.getKey()));
                 if (isField((String) entry.getKey())) {
-                    if (fieldSizeResolver.isResolvable((String) entry.getValue())) {
+                    FieldSizeResolver fieldSizeResolver = findResolverFor((String) entry.getValue());
+                    if (fieldSizeResolver != null) {
                         form.field(getField((String) entry.getKey()), fieldSizeResolver.resolveLength((String) entry.getValue()));
                     } else {
                         throw new IllegalArgumentException(MessageFormat.format(UNRESOLVABLE, entry.getKey(), entry.getValue()));
@@ -60,6 +61,15 @@ public class PropertyFileReader {
         }
         forms.addAll(readForms.values());
         return forms;
+    }
+
+    private FieldSizeResolver findResolverFor(String propertyValue) {
+        for (FieldSizeResolver resolver : fieldSizeResolvers) {
+            if (resolver.isResolvable(propertyValue)) {
+                return resolver;
+            }
+        }
+        return null;
     }
 
     private void validateKey(Object key) {
@@ -97,7 +107,7 @@ public class PropertyFileReader {
         }
     }
 
-    public void setFieldSizeResolver(FieldSizeResolver fieldSizeResolver) {
-        this.fieldSizeResolver = fieldSizeResolver;
+    public void setFieldSizeResolvers(List<FieldSizeResolver> fieldSizeResolvers) {
+        this.fieldSizeResolvers = fieldSizeResolvers;
     }
 }
