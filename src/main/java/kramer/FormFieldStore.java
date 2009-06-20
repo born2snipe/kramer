@@ -58,4 +58,8 @@ public class FormFieldStore {
     public void setUseDefaultLength(boolean useDefaultLength) {
         this.useDefaultLength = useDefaultLength;
     }
+
+    public int getNumberForms() {
+        return forms.size();
+    }
 }

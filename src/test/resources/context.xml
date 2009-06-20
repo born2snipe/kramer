@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+    <bean id="factory" class="kramer.FormFieldStoreFactory" factory-method="build">
+        <constructor-arg index="0" ref="fileReader"/>
+        <constructor-arg index="1">
+            <list>
+                <value>test.properties</value>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="fileReader" class="kramer.PropertyFileReader">
+        <property name="fieldSizeResolvers">
+            <list>
+                <bean class="kramer.IntFieldSizeResolver"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>

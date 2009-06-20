@@ -19,7 +19,7 @@ import java.text.MessageFormat;
 import java.util.*;
 
 
-public class PropertyFileReader {
+public class PropertyFileReader implements FieldSizeFileReader {
     private static final String BAD_KEY = "Property ({0}) is not a correct property format. Example formats: form1.class, form2.fieldname";
     private static final String UNRESOLVABLE = "Unable to find a FieldSizeResolver for ({0}) with value ({1})";
     private List<FieldSizeResolver> fieldSizeResolvers = new ArrayList<FieldSizeResolver>();
