@@ -16,9 +16,11 @@ import junit.framework.TestCase;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.sql.SQLException;
+
 
 public class SpringBeanTest extends TestCase {
-    public void test() {
+    public void test() throws SQLException {
         ApplicationContext context = new ClassPathXmlApplicationContext("context.xml");
 
         Object obj = context.getBean("factory");
@@ -29,5 +31,7 @@ public class SpringBeanTest extends TestCase {
         assertEquals(1, store.getNumberForms());
         assertEquals(10, store.getLength(new TestForm(), "firstName"));
         assertEquals(1, store.getLength(TestForm.class, "middleInitial"));
+        assertEquals(50, store.getLength(TestForm.class, "lastName"));
     }
+
 }
