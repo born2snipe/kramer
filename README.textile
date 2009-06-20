@@ -1,0 +1,43 @@
+h1. What is this trying to solve?
+
+Ever received a good ol' SQLException because a dang user entered to much data in a field? Well this project was created to help resolve this issue. The idea is to configure a field size mapping per form backing object.  You can either configure an integer size or use a database column as the length.
+
+h1. How do you use this wonderful tool? Come on boys and girls lets see...
+
+h4. The first thing we need to do is create our form backing object mapping file. 
+
+If you take a gander at the example below you will see a variety of properties defined. The first property "form.class=kramer.TestForm", this property is associating the key "form" to the class "kramer.TestForm", which in fact is a form backing object in our application. The second property "form.firstName=10", this is saying there is a field named "firstName" on the class "kramer.TestForm", and it is allowed up to 10 characters. Now for the really fun one, the third property "form.lastName=customer.last_name", this one is...yes you guessed, a field named "lastName" on "kramer.TestForm". This property is using a database column to determine it's length. To define a database column length you can supply one of two different formats either: [table_name].[column_name] or [schema].[table_name].[column_name].
+
+Example property file:
+<pre>
+	form.class=kramer.TestForm
+	form.firstName=10
+	form.middleInitial=1
+	form.lastName=customer.last_name
+</pre>
+
+h4. Ok, what is next, we need to make our FormFieldStoreFactory
+
+Since my IoC of choice is Spring, that is what my example will be in. The bean definition below is creating our factory and it is supplying the factory with two other necessary beans. The first one is our PropertyFileReader, which you guessed it, is the one that reads our property file from above. It requires to have to some FieldSizeResolvers these are what determine what your file size will be. Currently you have only two choices: IntFieldSizeResolver and DatabaseColumnFieldSizeResolver. If you choose to use the DatabaseColumnFieldSizeResolver you will of course need to provide a DataSource to so it can figure out our field sizes. Next, is the actually property files with all your form field mappings.
+
+<pre>
+<bean id="factory" class="kramer.FormFieldStoreFactory" factory-method="build">
+        <constructor-arg index="0">
+            <bean class="kramer.PropertyFileReader">
+                <property name="fieldSizeResolvers">
+                    <list>
+                        <bean class="kramer.IntFieldSizeResolver"/>
+                        <bean class="kramer.DatabaseColumnFieldSizeResolver">
+                            <property name="dataSource" ref="dataSource"/>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </constructor-arg>
+        <constructor-arg index="1">
+            <list>
+                <value>test.properties</value>
+            </list>
+        </constructor-arg>
+    </bean>
+</pre>
